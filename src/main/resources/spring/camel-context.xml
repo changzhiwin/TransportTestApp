@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring       https://camel.apache.org/schema/spring/camel-spring.xsd">
+    <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+        <endpoint id="foo2bar" uri="dozer:foo2bar?sourceModel=fooschema.FooSchema&amp;targetModel=barscheme.BarScheme&amp;marshalId=transform-json&amp;unmarshalId=fooschemaFooSchema&amp;mappingFile=transformation.xml"/>
+        <dataFormats>
+            <json id="fooschemaFooSchema" library="Jackson" unmarshalTypeName="fooschema.FooSchema"/>
+            <json id="transform-json" library="Jackson"/>
+        </dataFormats>
+        <route id="simple-route">
+            <from id="_foo" uri="netty4-http:http://0.0.0.0:8089/foo"/>
+            <to id="_to1" uri="ref:foo2bar"/>
+            <to id="_bar" uri="file:working/output"/>
+            <log id="_result" message=">>> ${body}"/>
+            <choice id="_old">
+                <when id="_young">
+                    <jsonpath allowEasyPredicate="false" allowSimple="false">$[?(@.old &lt; 19)]</jsonpath>
+                    <log id="_18" message="is a young"/>
+                </when>
+                <otherwise id="_adult">
+                    <log id="_audlt" message="audlt person"/>
+                </otherwise>
+            </choice>
+        </route>
+    </camelContext>
+</beans>
