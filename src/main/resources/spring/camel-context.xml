@@ -8,17 +8,19 @@
             <json id="transform-json" library="Jackson"/>
         </dataFormats>
         <route id="simple-route">
-            <from id="_foo" uri="netty4-http:http://0.0.0.0:8089/foo"/>
-            <to id="_to1" uri="ref:foo2bar"/>
-            <to id="_bar" uri="file:working/output"/>
-            <log id="_result" message=">>> ${body}"/>
-            <choice id="_old">
+            <from id="_http8089" uri="netty4-http:http://0.0.0.0:8089/foo"/>
+            <to id="_transform" uri="ref:foo2bar"/>
+            <to id="_file" uri="file:working/output"/>
+            <log id="_body" message=">>> ${body}"/>
+            <choice id="_age18">
                 <when id="_young">
-                    <jsonpath allowEasyPredicate="false" allowSimple="false">$[?(@.old &lt; 19)]</jsonpath>
-                    <log id="_18" message="is a young"/>
+                    <jsonpath>$[?(@.old &lt; 19)]</jsonpath>
+                    <log id="_title" message="is a young"/>
+                    <to id="_youngserver" uri="netty4-http:http://127.0.0.1:3000/young"/>
                 </when>
                 <otherwise id="_adult">
-                    <log id="_audlt" message="audlt person"/>
+                    <log id="_info" message="is a adult"/>
+                    <to id="_auditserver" uri="netty4-http:http://127.0.0.1:3000/audlt"/>
                 </otherwise>
             </choice>
         </route>
