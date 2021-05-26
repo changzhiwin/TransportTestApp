@@ -16,7 +16,15 @@
                 <when id="_young">
                     <jsonpath>$[?(@.old &lt; 19)]</jsonpath>
                     <log id="_title" message="is a young"/>
-                    <to id="_youngserver" uri="netty4-http:http://127.0.0.1:3000/young"/>
+                    <doTry id="_exception">
+                        <to id="_youngserver" uri="netty4-http:http://127.0.0.1:3000/young"/>
+                        <doCatch id="_anyException">
+                            <exception>java.lang.Exception</exception>
+                            <setBody id="_error">
+                                <constant>backend server is down</constant>
+                            </setBody>
+                        </doCatch>
+                    </doTry>
                 </when>
                 <otherwise id="_adult">
                     <log id="_info" message="is a adult"/>
